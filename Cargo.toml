@@ -1,0 +1,6 @@
+[package]
+name = "ell-sem-18"
+version = "0.1.0"
+authors = ["fkajzer <filipkajzer@gmail.com>"]
+
+[dependencies]
