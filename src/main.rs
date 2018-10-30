@@ -1,4 +1,8 @@
+#[macro_use] extern crate lazy_static;
+extern crate regex;
+
 mod track;
+mod formatter;
 
 use std::{fs,
           io,
@@ -16,16 +20,25 @@ fn main() {
                 |n| n.to_str().map(|s| String::from(prefix.to_owned() + "/" + s)))
       )}).collect::<Vec<String>>();
 
-    for dir in dir_names {
-        let tracks = read_filenames_from_dir(dir);
 
-        for track in tracks.unwrap() {
-            println!("{:?}", track.file_name);
+    // TODO this is for debugging and testing
+    for dir in dir_names {
+        let tracks = read_tracks_from_dir(dir);
+
+        for mut track in tracks.unwrap() {
+            // TODO do something
+            track.author_plus = match track.author.contains("ft") {
+                true => "true".to_string(),
+                false => "false".to_string()
+            };
+            // :#? => pretty print, :? print inLine
+            println!("{:#?}", track);
         }
     }
 }
 
-pub fn read_filenames_from_dir<P>(path: P) -> Result<Vec<Track>, io::Error>
+// TODO add logic here
+pub fn read_tracks_from_dir<P>(path: P) -> Result<Vec<Track>, io::Error>
 where
     P: AsRef<Path>,
 {
@@ -34,4 +47,3 @@ where
         .map(|x| x.map(|entry| Track::new(&entry.path())))
         .collect()
 }
-
