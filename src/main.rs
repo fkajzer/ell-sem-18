@@ -10,14 +10,14 @@ use std::{fs,
 use track::Track;
 
 fn main() {
-    let prefix = "../tracks";
+    const PREFIX: &str = "../tracks";
 
-    let paths = fs::read_dir(&Path::new(prefix)).unwrap();
+    let paths = fs::read_dir(&Path::new(PREFIX)).unwrap();
 
     let dir_names = paths.filter_map(|entry| {
         entry.ok().and_then(
             |e| e.path().file_name().and_then(
-                |n| n.to_str().map(|s| String::from(prefix.to_owned() + "/" + s)))
+                |n| n.to_str().map(|s| String::from(PREFIX.to_owned() + "/" + s)))
       )}).collect::<Vec<String>>();
 
 
