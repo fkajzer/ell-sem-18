@@ -26,18 +26,18 @@ fn main() {
         let tracks = read_tracks_from_dir(dir);
 
         for mut track in tracks.unwrap() {
-            // TODO do something
-            track.author_plus = match track.author.contains("ft") {
-                true => "true".to_string(),
-                false => "false".to_string()
-            };
+            // TODO find something thats not shitty for this
+            formatter::format_info(&mut track);
+
             // :#? => pretty print, :? print inLine
-            println!("{:#?}", track);
+            if !track.author_plus.is_empty() {
+                println!("{:#?}", track);
+            }
         }
     }
 }
 
-// TODO add logic here
+// TODO add logic here iteravely
 pub fn read_tracks_from_dir<P>(path: P) -> Result<Vec<Track>, io::Error>
 where
     P: AsRef<Path>,
