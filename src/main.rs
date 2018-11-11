@@ -3,37 +3,43 @@ extern crate regex;
 
 mod track;
 mod formatter;
+mod fileaccessor;
 
 use std::{fs,
           io,
           path::{Path}};
+
 use track::Track;
 
 fn main() {
-    const PREFIX: &str = "../tracks";
-
-    let paths = fs::read_dir(&Path::new(PREFIX)).unwrap();
+    const SOURCE_FOLDER: &str = "../tracks";
+    const TARGET_FOLDER: &str = "./ell-music";
+    let paths = fs::read_dir(&Path::new(SOURCE_FOLDER)).unwrap();
 
     let dir_names = paths.filter_map(|entry| {
         entry.ok().and_then(
             |e| e.path().file_name().and_then(
-                |n| n.to_str().map(|s| String::from(PREFIX.to_owned() + "/" + s)))
+                |n| n.to_str().map(|s| String::from(SOURCE_FOLDER.to_owned() + "/" + s)))
       )}).collect::<Vec<String>>();
 
 
-    // TODO this is for debugging and testing
     for dir in dir_names {
         let tracks = read_tracks_from_dir(dir);
 
         for mut track in tracks.unwrap() {
-            // TODO find something thats not shitty for this
             formatter::format_info(&mut track);
+            formatter::create_short_name(&mut track);
+            println!("{:#?}", track);
 
-            // :#? => pretty print, :? print inLine
-            if !track.author_plus.is_empty() {
-                println!("{:#?}", track);
-            }
+            fileaccessor::rename(
+                track.original_name,
+                format!("{}/{}", TARGET_FOLDER, track.release_year),
+                track.short_name);
         }
+    }
+
+    if SOURCE_FOLDER != TARGET_FOLDER {
+        fs::remove_dir_all(SOURCE_FOLDER).expect("Deleting SOURCE FOLDER failed");
     }
 }
 

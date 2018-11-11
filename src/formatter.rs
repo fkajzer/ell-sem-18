@@ -1,7 +1,8 @@
 use regex::Regex;
 use regex::Captures;
+use std::panic;
+
 use track::Track;
-// use std::panic;
 
 pub fn apply_regular_expression(file_info: &str) -> Captures {
     // Avoid compiling the same regex in a loop
@@ -52,7 +53,7 @@ pub fn apply_regular_expression(file_info: &str) -> Captures {
             }
         }
     };
-    // print_caps(&caps);
+
     caps
 }
 
@@ -108,22 +109,41 @@ pub fn format_info(track: &mut Track) {
             false => original_val
         };
     }
+
+    if track.release_year.is_empty() {
+        track.release_year = String::from("3001");
+    }
 }
 
-/*
-fn print_caps(caps: &Captures) {
-    print_or_error(caps, "year");
-    print_or_error(caps, "author");
-    print_or_error(caps, "title");
-    print_or_error(caps, "version");
+// Creates the short name, title + extension is mandatory,
+// hence the other will get concanated with extras.
+pub fn create_short_name(track: &mut Track) {
+    let mut short_name: String = String::from("");
+    if !track.author.is_empty() {
+        short_name += &(track.author.to_owned() + " - ");
+    }
+
+    if !track.title.is_empty() {
+        short_name += &(track.title.to_owned());
+    }
+
+    if !track.version.is_empty() {
+        short_name += &(" (".to_owned() + &track.version + ")");
+    }
+
+    short_name += &(".".to_owned() + &track.extension);
+
+    track.short_name = String::from(short_name);
 }
 
-fn print_or_error(caps: &Captures, index: &str) {
+pub fn get_or_empty(file_info: &Captures, index: &str) -> String {
     let result = panic::catch_unwind(|| {
-        println!("{:?} {:?}", index , &caps[index])
+        &file_info[index];
     });
 
     if result.is_err() {
-        println!("No {:?} found", index)
+        return String::new();
     }
-}*/
+
+    String::from(file_info[index].to_owned())
+}
