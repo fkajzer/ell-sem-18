@@ -71,8 +71,8 @@ pub fn clean_up(read_access: &File, org_entries: &Vec<String>, track_list: &Vec<
     }
 
     println!("{:#?}", file_string);
-    let mut overwrite_access = fileaccessor::overwrite_org_file();
-    overwrite_access.write_all(file_string.as_bytes()).expect("Something went wrong when cleaning up ORG_FILE");
+    // let mut overwrite_access = fileaccessor::overwrite_org_file();
+    // overwrite_access.write_all(file_string.as_bytes()).expect("Something went wrong when cleaning up ORG_FILE");
 
     match deletion_counter == 0 {
         true => println!("org_manager: No changes detected when scanning existing ORG_ENTRIES!"),
