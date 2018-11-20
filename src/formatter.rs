@@ -1,6 +1,5 @@
 use regex::Regex;
 use regex::Captures;
-use std::panic;
 
 use track::Track;
 
@@ -137,13 +136,8 @@ pub fn create_short_name(track: &mut Track) {
 }
 
 pub fn get_or_empty(file_info: &Captures, index: &str) -> String {
-    let result = panic::catch_unwind(|| {
-        &file_info[index];
-    });
-
-    if result.is_err() {
-        return String::new();
+    match &file_info.name(index) {
+        None => String::new(),
+        _ => String::from(file_info[index].to_owned())
     }
-
-    String::from(file_info[index].to_owned())
 }
