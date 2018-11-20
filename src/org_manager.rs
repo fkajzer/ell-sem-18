@@ -46,8 +46,8 @@ pub fn clean_up(read_access: &File, org_entries: &Vec<String>, track_list: &Vec<
         if !flat_track_list.contains(entry) { flagged_for_delete.push(org_entry) }
     }
 
-    println!("{:#?}", flat_track_list);
-    println!("{:#?}", flagged_for_delete);
+    // println!("{:#?}", flat_track_list);
+    // println!("{:#?}", flagged_for_delete);
 
     let mut file_string: String = String::new();
 
@@ -70,7 +70,7 @@ pub fn clean_up(read_access: &File, org_entries: &Vec<String>, track_list: &Vec<
         }
     }
 
-    println!("{:#?}", file_string);
+    // println!("{:#?}", file_string);
     // let mut overwrite_access = fileaccessor::overwrite_org_file();
     // overwrite_access.write_all(file_string.as_bytes()).expect("Something went wrong when cleaning up ORG_FILE");
 
