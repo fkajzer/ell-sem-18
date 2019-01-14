@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use formatter;
 
 // TODO derive allows for printing, maybe not needed at the end
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Track {
     pub original_name: String,
     pub file_name: String,
@@ -22,7 +22,6 @@ impl Track {
         let file_info = formatter::apply_regular_expression(path_buf.to_str().unwrap());
 
         Track {
-            // TODO remove original_name
             original_name: String::from(path_buf.to_str().unwrap()),
             file_name: String::from(path_buf.file_stem().unwrap().to_str().unwrap()),
             short_name: String::new(),

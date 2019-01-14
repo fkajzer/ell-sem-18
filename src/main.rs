@@ -1,11 +1,14 @@
 #[macro_use] extern crate lazy_static;
 extern crate regex;
+extern crate xml;
+extern crate quick_xml;
 
 mod track;
 mod formatter;
 mod fileaccessor;
 mod org_manager;
 mod org_entry;
+mod nml_manager;
 
 use std::{fs,
           io,
@@ -16,52 +19,76 @@ use std::{fs,
 use track::Track;
 use org_entry::OrgEntry;
 
-const SOURCE_FOLDER: &str = "./ell-music";
-const TARGET_FOLDER: &str = "./ell-music";
+const TRACKS_FOLDER: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/tracks";
+const TRACKS_TARGET_FOLDER: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/tracks";
+const ORG_FOLDER: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/org";
+const ORG_FILE: &str = "/tracks.org";
+const NML_LOCATION: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/nml/collection.nml";
 
-//TODO remove helper constatn
-const DEBUG_MODE: i32 = 0;
+#[allow(dead_code)]
+enum DebugMode {
+    NONE,
+    TRACK,
+    ORG,
+    NML,
+    ALL
+}
+
+const DEBUG_MODE: DebugMode = DebugMode::NONE;
 
 fn main() {
-    let paths = fs::read_dir(&Path::new(SOURCE_FOLDER)).unwrap();
+    let paths = fs::read_dir(&Path::new(TRACKS_FOLDER)).unwrap();
 
     let dir_names = paths.filter_map(|entry| {
         entry.ok().and_then(
             |e| e.path().file_name().and_then(
-                |n| n.to_str().map(|s| String::from(SOURCE_FOLDER.to_owned() + "/" + s)))
+                |n| n.to_str().map(|s| String::from(TRACKS_FOLDER.to_owned() + "/" + s)))
       )}).collect::<Vec<String>>();
+
+    let mut track_list: Vec<Track> = vec![];
+    for dir in dir_names {
+        let mut dirs = read_tracks_from_dir(dir).unwrap();
+        track_list.append(&mut dirs);
+    }
+
+    org_manager::clean_up(&track_list);
 
     let org_file = fileaccessor::append_org_file();
     let org_entries = read_tracks_from_org(&org_file);
 
-    if DEBUG_MODE > 1 { println!("{:#?}", org_entries) };
-
-    let mut org_add_counter: i32 = 0;
-    let mut track_list: Vec<Track> = vec![];
-
-    for dir in dir_names {
-        track_list.append(&mut read_tracks_from_dir(dir).unwrap());
+    match DEBUG_MODE {
+        DebugMode::ORG | DebugMode::ALL => println!("{:#?}", org_entries),
+        _ => ()
     }
 
-    org_manager::clean_up(&org_file, &org_entries, &track_list);
+    let mut org_add_counter: i32 = 0;
 
+    let mut new_tracks_in_org: Vec<Track> = vec![];
     for mut track in track_list {
         formatter::format_info(&mut track);
         formatter::create_short_name(&mut track);
 
-        if DEBUG_MODE > 2 { println!("{:#?}", track) };
+        match DEBUG_MODE {
+            DebugMode::TRACK | DebugMode::ALL => println!("{:#?}", track),
+            _ => ()
+        }
 
         fileaccessor::rename(
             &track.original_name,
-            format!("{}/{}", TARGET_FOLDER, track.release_year),
+            format!("{}/{}", TRACKS_TARGET_FOLDER, track.release_year),
             &track.short_name);
 
         if !org_entries.contains(&track.short_name) {
+            org_add_counter += 1;
+            new_tracks_in_org.push(track.clone());
+
             let org = OrgEntry::new(&track);
 
-            if DEBUG_MODE > 2 { println!("{:#?}", org_entries) };
+            match DEBUG_MODE {
+                DebugMode::ORG | DebugMode::ALL => println!("{:#?}", org),
+                _ => ()
+            }
 
-            org_add_counter += 1;
             org_manager::create_entry(&org_file, org);
         }
     }
@@ -71,9 +98,11 @@ fn main() {
         false => println!("org_manager: {} Entries have been added!", org_add_counter),
     }
 
-    if SOURCE_FOLDER != TARGET_FOLDER {
-        fs::remove_dir_all(SOURCE_FOLDER).expect("Deleting SOURCE FOLDER failed");
+    if TRACKS_FOLDER != TRACKS_TARGET_FOLDER {
+        fs::remove_dir_all(TRACKS_FOLDER).expect("Deleting SOURCE FOLDER failed");
     }
+
+    nml_manager::run(&new_tracks_in_org);
 }
 
 // TODO add logic here iteravely
