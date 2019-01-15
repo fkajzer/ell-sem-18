@@ -3,6 +3,12 @@ working with files in rust, evaluation of languages and libraries
 
 requirements: [cargo and rust](https://doc.rust-lang.org/book/ch01-01-installation.html)
 
+```
+curl https://sh.rustup.rs -sSf | sh
+
+source $HOME/.cargo/env
+```
+
 Use `python3 generate-fake-data.py` to create fake directories with song names.
 
 use `pwd` in your terminal to get the working directory of the tracks/ORG/NML.
