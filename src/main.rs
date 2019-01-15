@@ -1,6 +1,5 @@
 #[macro_use] extern crate lazy_static;
 extern crate regex;
-extern crate xml;
 extern crate quick_xml;
 
 mod track;
@@ -21,8 +20,7 @@ use org_entry::OrgEntry;
 
 const TRACKS_FOLDER: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/tracks";
 const TRACKS_TARGET_FOLDER: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/tracks";
-const ORG_FOLDER: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/org";
-const ORG_FILE: &str = "/tracks.org";
+const ORG_LOCATION: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/org/tracks.org";
 const NML_LOCATION: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/nml/collection.nml";
 
 #[allow(dead_code)]
@@ -31,10 +29,11 @@ enum DebugMode {
     TRACK,
     ORG,
     NML,
-    ALL
+    ALL,
+    WRITETODEBUGFILES
 }
 
-const DEBUG_MODE: DebugMode = DebugMode::NONE;
+const DEBUG_MODE: DebugMode = DebugMode::WRITETODEBUGFILES;
 
 fn main() {
     let paths = fs::read_dir(&Path::new(TRACKS_FOLDER)).unwrap();
@@ -93,6 +92,13 @@ fn main() {
         }
     }
 
+    for track in &new_tracks_in_org {
+        if &new_tracks_in_org.iter()
+            .filter(|&t| *t.short_name == track.short_name).count() > &1 {
+            println!("DIR: Found duplicate for {:#?}", track);
+        }
+    }
+
     match org_add_counter == 0 {
         true => println!("org_manager: ORG_ENTRIES up to date!"),
         false => println!("org_manager: {} Entries have been added!", org_add_counter),
@@ -105,7 +111,6 @@ fn main() {
     nml_manager::run(&new_tracks_in_org);
 }
 
-// TODO add logic here iteravely
 fn read_tracks_from_dir<P>(path: P) -> Result<Vec<Track>, io::Error>
 where
     P: AsRef<Path>,
