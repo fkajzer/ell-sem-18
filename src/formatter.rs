@@ -4,7 +4,7 @@ use regex::RegexBuilder;
 
 use track::Track;
 
-const TOO_LONG: usize = 64;
+const TOO_LONG: usize = 70;
 
 pub fn apply_regular_expression(file_info: &str) -> Captures {
     // Avoid compiling the same regex in a loop
