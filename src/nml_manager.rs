@@ -16,6 +16,7 @@ use DEBUG_MODE;
 
 pub fn run(track_list: &Vec<Track>) {
     match track_list.is_empty() {
+        true => println!("nml_manager: Nothing to update!"),
         false => {
             let mut reader = Reader::from_file(NML_LOCATION).unwrap();
             let nml_formatted_dir = TRACKS_TARGET_FOLDER.replace("/", "/:");
@@ -79,6 +80,8 @@ pub fn run(track_list: &Vec<Track>) {
 
                         let mut inner_buf = Vec::new();
 
+                        let mut mix = String::new();
+
                         loop {
                             match reader.read_event(&mut inner_buf) {
                                 Ok(Event::Start(ref e_inner)) if e_inner.name() == b"LOCATION" => {
@@ -92,6 +95,7 @@ pub fn run(track_list: &Vec<Track>) {
 
                                     if file_mappings.contains_key(&file_name) {
                                         let matching_track = file_mappings.get(&file_name).unwrap();
+                                        mix = matching_track.version.clone();
 
                                         location_elem.extend_attributes(e_inner.attributes().map(|attr| {
                                             let mut attr = attr.unwrap();
@@ -124,6 +128,30 @@ pub fn run(track_list: &Vec<Track>) {
                                     assert!(writer.write_event(Event::Start(entry_elem.to_owned())).is_ok());
                                     assert!(writer.write_event(Event::Start(location_elem)).is_ok());
                                 },
+                                Ok(Event::Start(ref e_inner)) if e_inner.name() == b"INFO" => {
+                                    let mut info_elem = BytesStart::owned(b"INFO".to_vec(), "INFO".len());
+
+                                    if !mix.is_empty() {
+                                        info_elem.extend_attributes(e_inner.attributes().map(|attr| {
+                                            let mut attr = attr.unwrap();
+
+                                            match attr.key {
+                                                b"MIX" => attr.value = Cow::from(naive_nml_encode(&mix).as_bytes().to_vec()),
+                                                _ => ()
+                                            }
+
+                                            attr
+                                        }));
+                                    } else {
+                                        info_elem.extend_attributes(e_inner.attributes().map(|attr| attr.unwrap()));
+                                    }
+
+                                    assert!(writer.write_event(Event::Start(info_elem)).is_ok());
+                                },
+                                Ok(Event::End(ref e)) if e.name() == b"INFO" => {
+                                    mix = String::new();
+                                    assert!(writer.write_event(Event::End(BytesEnd::borrowed(b"INFO"))).is_ok());
+                                },
                                 Ok(Event::End(ref e)) if e.name() == b"LOCATION" => {
                                     assert!(writer.write_event(Event::End(BytesEnd::borrowed(b"LOCATION"))).is_ok());
                                 },
@@ -155,8 +183,7 @@ pub fn run(track_list: &Vec<Track>) {
 
             fileaccessor::write_nml_file(writer.into_inner().into_inner());
             println!("nml_manager: Updated nml collection written to {}!", fileaccessor::get_nml_filename());
-        },
-        true => println!("nml_manager: Nothing to update!")
+        }
     }
 }
 

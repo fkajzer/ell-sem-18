@@ -20,7 +20,7 @@ impl OrgEntry {
             header: format!("** {}\n", track.short_name),
             properties_header: String::from(":PROPERTIES:\n"),
             author: get_or_empty(String::from("Author"), "\t\t", &track.author),
-            author_plus: get_or_empty(String::from("Author+"), "\t\t", &track.author_plus),
+            author_plus: get_or_empty(String::from("Author+"), "\t", &track.author_plus),
             title: get_or_empty(String::from("Title"), "\t\t", &track.title),
             title_plus: get_or_empty(String::from("Title+"), "\t\t", &track.title_plus),
             version: get_or_empty(String::from("Version"), "\t", &track.version),

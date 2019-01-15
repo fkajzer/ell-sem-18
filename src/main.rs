@@ -94,7 +94,8 @@ fn main() {
 
     for track in &new_tracks_in_org {
         if &new_tracks_in_org.iter()
-            .filter(|&t| *t.short_name == track.short_name).count() > &1 {
+            .filter(|&t| *t.short_name == track.short_name
+                && *t.file_name == track.file_name).count() > &1 {
             println!("DIR: Found duplicate for {:#?}", track);
         }
     }

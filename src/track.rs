@@ -30,7 +30,7 @@ impl Track {
             title: formatter::get_or_empty(&file_info, "title"),
             title_plus: String::new(),
             version: formatter::get_or_empty(&file_info, "version"),
-            version_plus: String::new(),
+            version_plus: formatter::get_or_empty(&file_info, "versionplus"),
             release_year: formatter::get_or_empty(&file_info, "year"),
             extension: String::from(path_buf.extension().unwrap().to_str().unwrap()),
         }

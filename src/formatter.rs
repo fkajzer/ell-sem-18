@@ -4,12 +4,17 @@ use regex::RegexBuilder;
 
 use track::Track;
 
-const TOO_LONG: usize = 80;
+const TOO_LONG: usize = 64;
 
 pub fn apply_regular_expression(file_info: &str) -> Captures {
     // Avoid compiling the same regex in a loop
     // https://docs.rs/regex/1.0.5/regex/#example-avoid-compiling-the-same-regex-in-a-loop
     lazy_static! {
+        static ref YATVV2: Regex = RegexBuilder::new(
+            r".*/(?P<year>\d{4})/(?P<author>.*) - (?P<title>.*) \((?P<version>.*) \((?P<versionplus>.*)\)\)\.")
+                .case_insensitive(true)
+                .build()
+                .expect("Invalid Regex");
         static ref YATV: Regex = RegexBuilder::new(
             r".*/(?P<year>\d{4})/(?P<author>.*) - (?P<title>.*) \((?P<version>.*)\)\.")
                 .case_insensitive(true)
@@ -47,22 +52,22 @@ pub fn apply_regular_expression(file_info: &str) -> Captures {
                 .expect("Invalid Regex");
     }
 
-    // println!("{:?}", "***********FILE***********");
-    // println!("{:?}", file_info);
-
-    let caps = match YATV.is_match(file_info) {
-        true => YATV.captures(file_info).unwrap(),
-        false => match ATVY.is_match(file_info) {
-            true => ATVY.captures(file_info).unwrap(),
-            false => match YAT.is_match(file_info) {
-                true => YAT.captures(file_info).unwrap(),
-                false => match ATY.is_match(file_info) {
-                    true => ATY.captures(file_info).unwrap(),
-                    false => match ATV.is_match(file_info) {
-                        true => ATV.captures(file_info).unwrap(),
-                        false => match AT.is_match(file_info) {
-                            true => AT.captures(file_info).unwrap(),
-                            false => T.captures(file_info).unwrap()
+    let caps = match YATVV2.is_match(file_info) {
+        true => YATVV2.captures(file_info).unwrap(),
+        false => match YATV.is_match(file_info) {
+            true => YATV.captures(file_info).unwrap(),
+            false => match ATVY.is_match(file_info) {
+                true => ATVY.captures(file_info).unwrap(),
+                false => match YAT.is_match(file_info) {
+                    true => YAT.captures(file_info).unwrap(),
+                    false => match ATY.is_match(file_info) {
+                        true => ATY.captures(file_info).unwrap(),
+                        false => match ATV.is_match(file_info) {
+                            true => ATV.captures(file_info).unwrap(),
+                            false => match AT.is_match(file_info) {
+                                true => AT.captures(file_info).unwrap(),
+                                false => T.captures(file_info).unwrap()
+                            }
                         }
                     }
                 }
@@ -84,11 +89,6 @@ pub fn format_info(track: &mut Track) {
                 .expect("Invalid Regex");
         static ref TITLE_SHORT: Regex = RegexBuilder::new(
             r"(?P<title>.*) (?P<title_plus>\(.*\))")
-                .case_insensitive(true)
-                .build()
-                .expect("Invalid Regex");
-        static ref VERSION_SHORT: Regex = RegexBuilder::new(
-            r"(?P<version>.*) (?P<version_plus>\(.*\))")
                 .case_insensitive(true)
                 .build()
                 .expect("Invalid Regex");
@@ -119,17 +119,8 @@ pub fn format_info(track: &mut Track) {
         };
     }
 
-    if !track.version.is_empty() {
-        let original_val = String::from(track.version.as_str());
-        track.version = match VERSION_SHORT.is_match(&track.version) {
-            true => {
-                let caps = TITLE_SHORT.captures(&track.version).unwrap();
-                track.version_plus = String::from(&caps["version_plus"]);
-
-                String::from(&caps["version"]) + "_"
-            }
-            false => original_val
-        };
+    if !track.version_plus.is_empty() {
+        track.version += "_";
     }
 
     if track.release_year.is_empty() {
