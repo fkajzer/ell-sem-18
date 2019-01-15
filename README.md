@@ -3,9 +3,15 @@ working with files in rust, evaluation of languages and libraries
 
 requirements: [cargo and rust](https://doc.rust-lang.org/book/ch01-01-installation.html)
 
-use `pwd` on in your terminal to get the working directory of the tracks/org/nml then update the locations of your files in `src/main.rs`:
+Use `python3 generate-fake-data.py` to create fake directories with song names.
 
-The `DebugMode` is set to `WRITETODEBUGFILES` as default, which will create a copy of your org and nml file in the same folder.
+use `pwd` in your terminal to get the working directory of the tracks/ORG/NML.
+Then update the locations of your files in `src/main.rs`:
+
+The `DebugMode` is set to `WRITETODEBUGFILES` as default, which will create a copy of your ORG and NML file in the same folder of the original file.
+The ORG will be created completely new, the NML will be a copy with overwritten values from the original NML file.
+
+After specifying their file path in `main.rs`, use `cargo run` to update the ORG and NML.
 
 # example
 
@@ -21,7 +27,3 @@ const DEBUG_MODE: DebugMode = DebugMode::WRITETODEBUGFILES;
 ```
 
 If you wish to overwrite your files directly, set `DebugMode` to `None`.
-
-Use `python generate-fake-data.py` to create fake directories with song names.
-
-After specifying their file path in `main.rs` use `cargo run`
