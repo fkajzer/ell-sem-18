@@ -26,4 +26,4 @@ const NML_LOCATION: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/nml/colle
 const DEBUG_MODE: DebugMode = DebugMode::WRITETODEBUGFILES;
 ```
 
-If you wish to overwrite your files directly, set `DebugMode` to `None`.
+If you wish to overwrite your files directly, set `DebugMode` to `NONE`.

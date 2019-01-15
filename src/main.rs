@@ -1,6 +1,7 @@
 #[macro_use] extern crate lazy_static;
 extern crate regex;
 extern crate quick_xml;
+extern crate time;
 
 mod track;
 mod formatter;
@@ -14,6 +15,7 @@ use std::{fs,
           io::{BufReader, BufRead},
           fs::File,
           path::{Path}};
+use time::PreciseTime;
 
 use track::Track;
 use org_entry::OrgEntry;
@@ -36,6 +38,8 @@ enum DebugMode {
 const DEBUG_MODE: DebugMode = DebugMode::WRITETODEBUGFILES;
 
 fn main() {
+    let start = PreciseTime::now();
+
     let paths = fs::read_dir(&Path::new(TRACKS_FOLDER)).unwrap();
 
     let dir_names = paths.filter_map(|entry| {
@@ -110,6 +114,12 @@ fn main() {
     }
 
     nml_manager::run(&new_tracks_in_org);
+
+    let end = PreciseTime::now();
+    match DEBUG_MODE {
+        DebugMode::NONE => (),
+        _ => println!("runtime was {} seconds", start.to(end))
+    }
 }
 
 fn read_tracks_from_dir<P>(path: P) -> Result<Vec<Track>, io::Error>

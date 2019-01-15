@@ -129,7 +129,7 @@ pub fn format_info(track: &mut Track) {
 }
 
 // Creates the short name, title + extension is mandatory,
-// hence the other will get concanated with extras.
+// hence the other will get concatenated with extras.
 pub fn create_short_name(track: &mut Track) {
     let mut short_name: String = String::from("");
     if !track.author.is_empty() {
