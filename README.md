@@ -29,7 +29,7 @@ const DEBUG_MODE: DebugMode = DebugMode::WRITETODEBUGFILES;
 
 Use `cargo build` to build the project and install all dependencies.
 
-After specifying their file path in `main.rs`, use `cargo run` to update the ORG and NML.
+After specifying their file path in `src/main.rs`, use `cargo run` to update the ORG and NML.
 
 The `DebugMode` is set to `WRITETODEBUGFILES` as default, which will create a copy of your ORG and NML file in the same folder of the original file.
 The ORG will be created completely new, the NML will be a copy with overwritten values from the original NML file.
