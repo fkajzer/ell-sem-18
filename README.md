@@ -14,11 +14,6 @@ Use `python3 generate-fake-data.py` to create fake directories with song names.
 use `pwd` in your terminal to get the working directory of the tracks/ORG/NML.
 Then update the locations of your files in `src/main.rs`:
 
-The `DebugMode` is set to `WRITETODEBUGFILES` as default, which will create a copy of your ORG and NML file in the same folder of the original file.
-The ORG will be created completely new, the NML will be a copy with overwritten values from the original NML file.
-
-After specifying their file path in `main.rs`, use `cargo run` to update the ORG and NML.
-
 # example
 
 ```
@@ -31,5 +26,10 @@ const NML_LOCATION: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/nml/colle
 
 const DEBUG_MODE: DebugMode = DebugMode::WRITETODEBUGFILES;
 ```
+
+After specifying their file path in `main.rs`, use `cargo run` to update the ORG and NML.
+
+The `DebugMode` is set to `WRITETODEBUGFILES` as default, which will create a copy of your ORG and NML file in the same folder of the original file.
+The ORG will be created completely new, the NML will be a copy with overwritten values from the original NML file.
 
 If you wish to overwrite your files directly, set `DebugMode` to `NONE`.
