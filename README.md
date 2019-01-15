@@ -11,7 +11,7 @@ source $HOME/.cargo/env
 
 Use `python3 generate-fake-data.py` to create fake directories with song names.
 
-use `pwd` in your terminal to get the working directory of the tracks/ORG/NML.
+Use `pwd` in your terminal to get the working directory of the tracks/ORG/NML.
 Then update the locations of your files in `src/main.rs`:
 
 # example
@@ -26,6 +26,8 @@ const NML_LOCATION: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/nml/colle
 
 const DEBUG_MODE: DebugMode = DebugMode::WRITETODEBUGFILES;
 ```
+
+Use `cargo build` to build the project and install all dependencies.
 
 After specifying their file path in `main.rs`, use `cargo run` to update the ORG and NML.
 
