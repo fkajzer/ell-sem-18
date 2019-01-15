@@ -5,7 +5,7 @@ requirements: [cargo and rust](https://doc.rust-lang.org/book/ch01-01-installati
 
 use `pwd` on in your terminal to get the working directory of the tracks/org/nml then update the locations of your files in `src/main.rs`:
 
-#example
+# example
 
 ```
 const TRACKS_FOLDER: &str = "/Users/fkajzer/Projects/seminar/ell-sem-18/tracks";
